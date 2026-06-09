@@ -11,3 +11,7 @@ package-lock.json
 # Editor
 .idea/
 .vscode/
+
+# Local-only authoring sources (PDFs are the shared deliverable)
+/docs/
+/docx/
