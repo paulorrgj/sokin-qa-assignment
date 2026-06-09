@@ -1,0 +1,49 @@
+name: mobile-e2e
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # Fast, deterministic gate on every PR: runs the full suite against the
+  # responsive site under mobile emulation. No emulator/simulator needed, so it
+  # finishes in minutes and keeps the merge loop honest.
+  web-emulation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test:web
+
+  # Native jobs are the real device coverage. They are scaffolded and disabled
+  # until the app artifacts (.apk / .app) are published by the app pipeline.
+  # In practice these run nightly + pre-release against a device cloud
+  # (BrowserStack / Sauce Labs / Firebase Test Lab) for real-device breadth.
+  android:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      # - run: download app artifact -> $ANDROID_APP
+      # - run: npm run test:android
+
+  ios:
+    if: false
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      # - run: download app artifact -> $IOS_APP
+      # - run: npm run test:ios
